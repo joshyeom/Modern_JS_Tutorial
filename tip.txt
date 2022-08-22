@@ -279,3 +279,95 @@ function isEmpty(obj) {
   }
   return true;
 }
+
+{과제 2}
+변하지 않는 객체?
+중요도: 5
+const와 함께 선언한 객체를 변경하는 게 가능할까요? 생각을 공유해주세요!
+
+const user = {
+  name: "John"
+};
+// 아래 코드는 에러 없이 실행될까요?
+user.name = "Pete";
+해답
+당연히 에러 없이 실행됩니다.
+
+const는 한 번이라도 값을 할당한 변수가 변경되는 걸 막습니다.
+
+변수 user는 객체 참조 값을 저장하고 있는데, const는 이 값이 변경되는걸 막는 것이지, 객체의 내용(프로퍼티)을 변경하는 건 막지 않습니다.
+
+const user = {
+  name: "John"
+};
+// works
+user.name = "Pete";
+// error
+user = 123;
+
+
+{과제3}
+프로퍼티 합계 구하기
+중요도: 5
+모든 팀원의 월급에 대한 정보를 담고 있는 객체가 있다고 해봅시다.
+
+let salaries = {
+  John: 100,
+  Ann: 160,
+  Pete: 130
+}
+모든 팀원의 월급을 합한 값을 구하고, 그 값을 변수 sum에 저장해주는 코드를 작성해보세요. sum엔 390이 저장되어야겠죠?
+
+주의: salaries가 비어있다면 sum에 0이 저장되어야 합니다.
+
+해답
+let salaries = {
+  John: 100,
+  Ann: 160,
+  Pete: 130
+};
+
+let sum = 0;
+for (let key in salaries) {
+  sum += salaries[key];
+}
+
+alert(sum); // 390
+
+
+{과제 4}
+프로퍼티 값 두 배로 부풀리기
+중요도: 3
+객체 obj의 프로퍼티 값이 숫자인 경우 그 값을 두 배 해주는 함수 multiplyNumeric(obj)을 만들어보세요.
+
+예시:
+
+// 함수 호출 전
+let menu = {
+  width: 200,
+  height: 300,
+  title: "My menu"
+};
+
+multiplyNumeric(menu);
+
+// 함수 호출 후
+menu = {
+  width: 400,
+  height: 600,
+  title: "My menu"
+};
+multiplyNumeric은 아무것도 반환하지 않아도 괜찮습니다. 객체 자체를 수정해주기만 하면 됩니다.
+
+힌트) typeof를 사용하면 프로퍼티 값이 숫자인지 확인할 수 있습니다.
+
+테스트 코드가 담긴 샌드박스를 열어 정답을 작성해보세요.
+
+해답
+function multiplyNumeric(obj) {
+  for (let key in obj) {
+    if (typeof obj[key] == 'number') {
+      obj[key] *= 2;
+    }
+  }
+}
