@@ -1,38 +1,266 @@
-[가비지 컬렉션]
+[매서드와 this]
 
-가비지 컬렉션 기준
-자바스크립트는 도달 가능성(reachability) 이라는 개념을 사용해 메모리 관리를 수행합니다.
+메서드 만들기
+객체 user에게 인사할 수 있는 능력을 부여해 줍시다.
 
-‘도달 가능한(reachable)’ 값은 쉽게 말해 어떻게든 접근하거나 사용할 수 있는 값을 의미합니다. 도달 가능한 값은 메모리에서 삭제되지 않습니다.
+let user = {
+  name: "John",
+  age: 30
+};
 
-아래 소개해 드릴 값들은 그 태생부터 도달 가능하기 때문에, 명백한 이유 없이는 삭제되지 않습니다.
+user.sayHi = function() {
+  alert("안녕하세요!");
+};
+
+user.sayHi(); // 안녕하세요!
+함수 표현식으로 함수를 만들고, 객체 프로퍼티 user.sayHi에 함수를 할당해 주었습니다.
+
+이제 객체에 할당된 함수를 호출하면 user가 인사를 해줍니다.
+
+이렇게 객체 프로퍼티에 할당된 함수를 메서드(method) 라고 부릅니다.
+
+위 예시에선 user에 할당된 sayHi가 메서드이죠.
+
+메서드는 아래와 같이 이미 정의된 함수를 이용해서 만들 수도 있습니다.
+
+let user = {
+  // ...
+};
+
+// 함수 선언
+function sayHi() {
+  alert("안녕하세요!");
+};
+
+// 선언된 함수를 메서드로 등록
+user.sayHi = sayHi;
+
+user.sayHi(); // 안녕하세요!
+객체 지향 프로그래밍
+객체를 사용하여 개체를 표현하는 방식을 객체 지향 프로그래밍(object-oriented programming, OOP) 이라 부릅니다.
+
+OOP는 그 자체만으로도 학문의 분야를 만드는 중요한 주제입니다. 올바른 개체를 선택하는 방법, 개체 사이의 상호작용을 나타내는 방법 등에 관한 의사결정은 객체 지향 설계를 기반으로 이뤄집니다. 객체 지향 프로그래밍 관련 추천도서로는 에릭 감마의 ‘GoF의 디자인 패턴’,
+그래디 부치의 ‘UML을 활용한 객체지향 분석 설계’ 등이 있습니다.
+
+
+메서드 단축 구문
+객체 리터럴 안에 메서드를 선언할 때 사용할 수 있는 단축 문법을 소개해 드리겠습니다.
+
+// 아래 두 객체는 동일하게 동작합니다.
+
+user = {
+  sayHi: function() {
+    alert("Hello");
+  }
+};
+
+// 단축 구문을 사용하니 더 깔끔해 보이네요.
+user = {
+  sayHi() { // "sayHi: function()"과 동일합니다.
+    alert("Hello");
+  }
+};
+위처럼 function을 생략해도 메서드를 정의할 수 있습니다.
+
+일반적인 방법과 단축 구문을 사용한 방법이 완전히 동일하진 않습니다. 
+
+
+메서드와 this
+메서드는 객체에 저장된 정보에 접근할 수 있어야 제 역할을 할 수 있습니다. 모든 메서드가 그런 건 아니지만, 대부분의 메서드가 객체 프로퍼티의 값을 활용합니다.
+
+user.sayHi()의 내부 코드에서 객체 user에 저장된 이름(name)을 이용해 인사말을 만드는 경우가 이런 경우에 속합니다.
+
+메서드 내부에서 this 키워드를 사용하면 객체에 접근할 수 있습니다.
+
+이때 '점 앞’의 this는 객체를 나타냅니다. 정확히는 메서드를 호출할 때 사용된 객체를 나타내죠.
 
 예시:
 
-현재 함수의 지역 변수와 매개변수
-중첩 함수의 체인에 있는 함수에서 사용되는 변수와 매개변수
-전역 변수
-기타 등등
-이런 값은 루트(root) 라고 부릅니다.
+let user = {
+  name: "John",
+  age: 30,
 
-루트가 참조하는 값이나 체이닝으로 루트에서 참조할 수 있는 값은 도달 가능한 값이 됩니다.
+  sayHi() {
+    // 'this'는 '현재 객체'를 나타냅니다.
+    alert(this.name);
+  }
 
-전역 변수에 객체가 저장되어있다고 가정해 봅시다. 이 객체의 프로퍼티가 또 다른 객체를 참조하고 있다면, 프로퍼티가 참조하는 객체는 도달 가능한 값이 됩니다. 이 객체가 참조하는 다른 모든 것들도 도달 가능하다고 여겨집니다. 자세한 예시는 아래에서 살펴보겠습니다.
+};
 
-자바스크립트 엔진 내에선 가비지 컬렉터(garbage collector)가 끊임없이 동작합니다. 가비지 컬렉터는 모든 객체를 모니터링하고, 도달할 수 없는 객체는 삭제합니다.
+user.sayHi(); // John
+user.sayHi()가 실행되는 동안에 this는 user를 나타냅니다.
 
-내부 알고리즘
-'mark-and-sweep’이라 불리는 가비지 컬렉션 기본 알고리즘에 대해 알아봅시다.
+this를 사용하지 않고 외부 변수를 참조해 객체에 접근하는 것도 가능합니다.
 
-'가비지 컬렉션’은 대개 다음 단계를 거쳐 수행됩니다.
+let user = {
+  name: "John",
+  age: 30,
 
-가비지 컬렉터는 루트(root) 정보를 수집하고 이를 ‘mark(기억)’ 합니다.
-루트가 참조하고 있는 모든 객체를 방문하고 이것들을 ‘mark’ 합니다.
-mark 된 모든 객체에 방문하고 그 객체들이 참조하는 객체도 mark 합니다. 한번 방문한 객체는 전부 mark 하기 때문에 같은 객체를 다시 방문하는 일은 없습니다.
-루트에서 도달 가능한 모든 객체를 방문할 때까지 위 과정을 반복합니다.
-mark 되지 않은 모든 객체를 메모리에서 삭제합니다.
+  sayHi() {
+    alert(user.name); // 'this' 대신 'user'를 이용함
+  }
+
+};
+그런데 이렇게 외부 변수를 사용해 객체를 참조하면 예상치 못한 에러가 발생할 수 있습니다. user를 복사해 다른 변수에 할당(admin = user)하고, user는 전혀 다른 값으로 덮어썼다고 가정해 봅시다. sayHi()는 원치 않는 값(null)을 참조할 겁니다.
+
+예시:
+
+let user = {
+  name: "John",
+  age: 30,
+
+  sayHi() {
+    alert( user.name ); // Error: Cannot read property 'name' of null
+  }
+
+};
 
 
-가비지 컬렉션은 엔진이 자동으로 수행하므로 개발자는 이를 억지로 실행하거나 막을 수 없습니다.
-객체는 도달 가능한 상태일 때 메모리에 남습니다.
-참조된다고 해서 도달 가능한 것은 아닙니다. 서로 연결된 객체들도 도달 불가능할 수 있습니다.
+let admin = user;
+user = null; // user를 null로 덮어씁니다.
+
+admin.sayHi(); // sayHi()가 엉뚱한 객체를 참고하면서 에러가 발생했습니다.
+alert 함수가 user.name 대신 this.name을 인수로 받았다면 에러가 발생하지 않았을 겁니다.
+
+
+자유로운 this
+자바스크립트의 this는 다른 프로그래밍 언어의 this와 동작 방식이 다릅니다. 자바스크립트에선 모든 함수에 this를 사용할 수 있습니다.
+
+아래와 같이 코드를 작성해도 문법 에러가 발생하지 않습니다.
+
+function sayHi() {
+  alert( this.name );
+}
+this 값은 런타임에 결정됩니다. 컨텍스트에 따라 달라지죠.
+
+동일한 함수라도 다른 객체에서 호출했다면 'this’가 참조하는 값이 달라집니다.
+
+let user = { name: "John" };
+let admin = { name: "Admin" };
+
+function sayHi() {
+  alert( this.name );
+}
+
+// 별개의 객체에서 동일한 함수를 사용함
+user.f = sayHi;
+admin.f = sayHi;
+
+// 'this'는 '점(.) 앞의' 객체를 참조하기 때문에
+// this 값이 달라짐
+user.f(); // John  (this == user)
+admin.f(); // Admin  (this == admin)
+
+admin['f'](); // Admin (점과 대괄호는 동일하게 동작함)
+규칙은 간단합니다. obj.f()를 호출했다면 this는 f를 호출하는 동안의 obj입니다. 위 예시에선 obj가 user나 admin을 참조하겠죠.
+
+
+this 값은 런타임에 결정됩니다.
+
+함수를 선언할 때 this를 사용할 수 있습니다. 다만, 함수가 호출되기 전까지 this엔 값이 할당되지 않습니다.
+
+
+
+{과제 1}
+
+객체 리터럴에서 'this' 사용하기
+중요도: 5
+함수 makeUser는 객체를 반환합니다.
+
+이 객체의 ref에 접근하면 어떤 결과가 발생하고, 그 이유는 뭘까요?
+
+function makeUser() {
+  return {
+    name: "John",
+    ref: this
+  };
+};
+
+let user = makeUser();
+
+alert( user.ref.name ); // 결과가 어떻게 될까요?
+해답
+에러가 발생합니다.
+
+직접 실행해 봅시다.
+
+function makeUser() {
+  return {
+    name: "John",
+    ref: this
+  };
+};
+
+let user = makeUser();
+
+alert( user.ref.name ); // Error: Cannot read property 'name' of undefined
+에러가 발생하는 이유는 this 값을 설정할 땐 객체 정의가 사용되지 않기 때문입니다. this 값은 호출 시점에 결정됩니다.
+
+위 코드에서 makeUser() 내 this는 undefined가 됩니다. 메서드로써 호출된 게 아니라 함수로써 호출되었기 때문입니다.
+
+this 값은 전체 함수가 됩니다. 코드 블록과 객체 리터럴은 여기에 영향을 주지 않습니다.
+
+따라서 ref: this는 함수의 현재 this 값을 가져옵니다.
+
+this의 값이 undefined가 되게 함수를 다시 작성하면 다음과 같습니다.
+
+function makeUser(){
+  return this; // 이번엔 객체 리터럴을 사용하지 않았습니다.
+}
+
+alert( makeUser().name ); // Error: Cannot read property 'name' of undefined
+보시다시피 alert( makeUser().name )와 위쪽에서 살펴본 alert( user.ref.name )의 결과가 같은 것을 확인할 수 있습니다.
+
+에러가 발생하지 않게 하려면 코드를 다음과 같이 수정하면 됩니다.
+
+function makeUser() {
+  return {
+    name: "John",
+    ref() {
+      return this;
+    }
+  };
+};
+
+let user = makeUser();
+
+alert( user.ref().name ); // John
+이렇게 하면 user.ref()가 메서드가 되고 this는 . 앞의 객체가 되기 때문에 에러가 발생하지 않습니다.
+
+
+
+{과제 2}
+계산기 만들기
+중요도: 5
+calculator라는 객체를 만들고 세 메서드를 구현해 봅시다.
+
+read()에선 프롬프트 창을 띄우고 더할 값 두 개를 입력받습니다. 입력받은 값은 객체의 프로퍼티에 저장합니다.
+sum()은 저장된 두 값의 합을 반환합니다.
+mul()은 저장된 두 값의 곱을 반환합니다.
+let calculator = {
+  // ... 여기에 답안 작성 ...
+};
+
+calculator.read();
+alert( calculator.sum() );
+alert( calculator.mul() );
+
+해답
+let calculator = {
+  sum() {
+    return this.a + this.b;
+  },
+
+  mul() {
+    return this.a * this.b;
+  },
+
+  read() {
+    this.a = +prompt('첫 번째 값:', 0);
+    this.b = +prompt('두 번째 값:', 0);
+  }
+};
+
+calculator.read();
+alert( calculator.sum() );
+alert( calculator.mul() );
